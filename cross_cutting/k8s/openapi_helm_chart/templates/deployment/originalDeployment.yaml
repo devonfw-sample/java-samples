@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openapi-server-original-deployment
+  labels:
+    app: openapi-server-original
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openapi-server-original
+  template:
+    metadata:
+      labels:
+        app: openapi-server-original
+    spec:
+      containers:
+      - name: spring-original-server-spring
+        image: original-server-spring
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: openapi-server-original-config
+              key: mysql_host
+
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-database-secret
+              key: mysql_root_password
+
+        - name: MYSQL_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-database-secret
+              key: mysql_root_username
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openapi-server-original-service
+spec:
+  selector:
+    app: openapi-server-original
+  ports:
+    - protocol: TCP
+      port: 5031
+      targetPort: 8080
+

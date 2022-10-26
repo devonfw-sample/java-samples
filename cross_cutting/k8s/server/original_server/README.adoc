@@ -1,0 +1,32 @@
+= OpenApi Server Plugin
+
+This example will show how to generate server code with the OpenApi Generator plugin
+
+== How to run the example
+
+1. Run maven `clean` and `compile`
+2. Start the application
+3. Run tests
+
+
+== Container
+
+
+== Install Rancher Desktop
+
+== Select "containered" as container runtime
+
+=== Create local container imgage from project
+----
+nerdctl build -t openapi-spring --namespace k8s.io .
+----
+
+=== Check if image is created
+----
+nerdctl images --namespace k8s.io
+----
+
+=== Install components into the cluster with helm
+----
+helm install openapi-serve ./openapi-example/ --namespace default
+----

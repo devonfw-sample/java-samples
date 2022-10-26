@@ -1,0 +1,61 @@
+== Run Example
+
+In this example, a server (Original Server) inside the cluster connects to a database inside the cluster. To access data of the original server, another server(Access Server) inside the cluster can be accessed from outside the cluster. The access server  will communicate to the Original Server to retrieve data and proxys it to the user.
+
+image::./docs/img/ClusterOverviewSimple.drawio.svg["ClusterOverviewSimple"]
+
+image::./docs/img/ClusterOverview.png["ClusterOverview"]
+
+=== Requirements
+
+- link:https://maven.apache.org/download.cgi[Maven] installed
+- link:https://taskfile.dev/installation/[Taskfile] installed
+- link:https://rancherdesktop.io/[Rancher Desktop] installed  with link:https://github.com/devonfw/ide[DevonIDE]
+- locale Kubernetes Cluster started
+
+=== Installation
+[tabs]
+====
+Docker::
++
+--
+    - Run `task deployDocker`
+--
+Nerdctl::
++
+--
+    - Run `task deployNerd`
+--
+====
+
+=== Uninstallation
+[tabs]
+====
+Docker::
++
+--
+    - Run `task removeDocker`
+--
+Nerdctl::
++
+--
+    - Run `task removeNerd`
+--
+====
+
+=== What happened
+
+1. For the original and access Server, a Dockerimage got created into a locale image repository
+2. The helm chart inside openapi_helm_chart got installed
+3. The Server and Database started and connected to each other
+
+=== Test
+At `http://localhost:5030/guest` there is a list of invited guests 
+
+If localhost is not working run 
+
+```
+kubectl get servie
+```
+
+Use the External Ip of the `openapi-server-access-service` instead of localhost

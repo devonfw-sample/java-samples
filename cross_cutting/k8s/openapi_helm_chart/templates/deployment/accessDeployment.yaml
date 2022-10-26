@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openapi-server-access-deployment
+  labels:
+    app: openapi-server-access
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openapi-server-access
+  template:
+    metadata:
+      labels:
+        app: openapi-server-access
+    spec:
+      containers:
+      - name: spring-access-server-spring
+        image: access-server-spring
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MYTHAIAPI_HOST_URI
+          valueFrom:
+            configMapKeyRef:
+              name: openapi-server-access-config
+              key: mythaiapi_host_uri
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openapi-server-access-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: openapi-server-access
+  ports:
+    - protocol: TCP
+      port: 5030
+      targetPort: 8080
+
+

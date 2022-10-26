@@ -1,0 +1,30 @@
+version: '3'
+
+tasks:
+  deployNerd:
+    cmds:
+      - mvn -f ./access_server/pom.xml clean install
+      - mvn -f ./original_server/pom.xml clean install
+      - nerdctl build -t original-server-spring --namespace k8s.io ./original_server/
+      - nerdctl build -t access-server-spring --namespace k8s.io ./access_server/
+      - helm install openapi-example ./openapi_helm_chart/
+
+  removeNerd:
+    cmds:
+      - nerdctl image rm original-server-spring --namespace k8s.io -f
+      - nerdctl image rm access-server-spring --namespace k8s.io -f 
+      - helm uninstall openapi-example
+
+  deployDocker:
+    cmds:
+      - mvn -f ./access_server/pom.xml clean install
+      - mvn -f ./original_server/pom.xml clean install
+      - docker build -t original-server-spring ./original_server/
+      - docker build -t access-server-spring ./access_server/
+      - helm install openapi-example ./openapi_helm_chart/
+
+  removeDocker:
+    cmds:
+      - docker image rm original-server-spring -f
+      - docker image rm access-server-spring -f 
+      - helm uninstall openapi-example

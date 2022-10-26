@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openapi-server-access-config
+data:
+  mythaiapi_host_uri: "http://openapi-server-original-service.default.svc.cluster.local:5031/api/v1"
