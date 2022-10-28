@@ -21,7 +21,6 @@ public class InvitedGuestController {
         return invitedGuestApi.getInvitedGuestAll();
     }
 
-
     @GetMapping("/guest/{id}")
     public InvitedGuestTO getAllGuests(@PathVariable Long id) throws ApiException {
         return invitedGuestApi.getInvitedGuestById(id);

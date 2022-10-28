@@ -1,5 +1,6 @@
 == Run Example
 
+
 In this example, a server (Original Server) inside the cluster connects to a database inside the cluster. To access data of the original server, another server(Access Server) inside the cluster is used. The aceess server can be accessed from outside the cluster. The access server  will communicate to the original server to retrieve data and sends it to the user.
 
 image::./docs/img/ClusterOverviewSimple.drawio.svg["ClusterOverviewSimple"]
@@ -63,6 +64,14 @@ Nerdctl behind VPN::
     - Run `task removeNerdVPN`
 --
 ====
+
+=== Using VPN
+Using inside a VPN is currently only working with a work around:
+When running `kubectl` commands prepend `wsl`
+
+1. Start Rancher Desktop with vpn disabled
+2. Enable VPN
+3. Test connection with `wsl kubectl get all` 
 
 === What happened
 
