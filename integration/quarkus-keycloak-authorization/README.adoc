@@ -1,0 +1,13 @@
+# Using Keycloak Authorization Services and Policy Enforcer to Protect JAX-RS Applications
+
+
+Start postgres DB:
+
+`docker compose up`
+
+Run the application in dev mode:
+
+`mvn quarkus:dev`
+
+
+

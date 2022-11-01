@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  postgresdb:
+    image: docker.io/bitnami/postgresql:14
+    container_name: postgresdb
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    ports:
+      - "5432:5432"
+    networks:
+      - demo
+
+networks:
+  demo:
