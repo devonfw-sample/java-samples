@@ -1,0 +1,31 @@
+= JPA Example
+
+Examples prepared to explain the below concepts.
+
+1. Use Lazy loading
+2. Usage of java.time.localdate.
+3. Enum usage with converter
+
+
+=== Lazy loading
+
+Always advised to use lazy loading. Lazy loading fetches data only when it is really required. This example uses FetchType Lazy, the invited guests will be loaded only on demand.
+
+A `SELECT` query applied for fetching booking or bookings will not fetch any invited guests. The below statement fetches all guests for a particular booking. It executes a `SELECT` query with booking id as arguement.
+ `BookingEntity.getInvitedGuests()`
+
+
+=== Enum
+
+Using Converter annotation convert an entity attribute to a database value and vice versa. In this example, enum defined as BOOKED("B"), and NOTBOOKED("N") and CANCELED ("C"). This helps to make sure the code is not broken by refactorings.
+
+The other two ways to deal with enums are by their `Ordinal` or by `name`. `Ordinal` may not be a good choice, if someone changes the places of the items in enum, wrong integer value may be stored.
+
+=== LocalDateTime
+
+java.time.LocalDateTime used instead of java.util.date, major benefits are:
+
+* LocalDateTime API has its own format/parse methods.
+* Addition/subtraction operation are easier (minusMinutes,plusDays etc.)
+
+
