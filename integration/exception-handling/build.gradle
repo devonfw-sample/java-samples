@@ -1,0 +1,56 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.2'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+    id 'java'
+    id 'idea'
+    id "org.openapi.generator" version "6.2.0"
+}
+
+group = 'com.baumeister.sndbx'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '18'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets.main.java.srcDirs += 'build/generated-sources/server/src/main/java'
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'io.swagger.parser.v3:swagger-parser:2.1.6'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.4'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+}
+
+openApiGenerate {
+    // other settings omitted
+    inputSpec = "${rootDir}/src/main/openapi/BookingOpenApi.yaml"
+    outputDir = "${buildDir}/generated-sources/server"
+    generatorName = "spring"
+    library = "spring-boot"
+    modelNameSuffix = "To"
+    apiPackage = "com.devonfw.devon4j.generated.api.service"
+    modelPackage = "com.devonfw.devon4j.generated.api.model"
+    invokerPackage = "com.devonfw.devon4j.generated.api.handler"
+    configOptions = [
+            sourceFolder      : "src/main/java",
+            interfaceOnly     : "true",
+            serializableModel : "true",
+            singleContentTypes: "true",
+            legacyDiscriminatorBehavior:"true"
+    ]
+}
+
+tasks.compileJava.dependsOn(tasks.openApiGenerate)
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
