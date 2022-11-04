@@ -1,7 +1,7 @@
-package com.baumeister.sndbx.exceptionhandling.domain;
+package com.devonfw.java.integration.exceptionhandling.domain;
 
-import com.baumeister.sndbx.exceptionhandling.domain.model.Booking;
-import com.baumeister.sndbx.exceptionhandling.general.exception.NotFoundException;
+import com.devonfw.java.integration.exceptionhandling.domain.model.Booking;
+import com.devonfw.java.integration.exceptionhandling.general.exception.NotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 

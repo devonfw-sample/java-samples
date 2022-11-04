@@ -1,8 +1,7 @@
-package com.baumeister.sndbx.exceptionhandling.service.mapper;
+package com.devonfw.java.integration.exceptionhandling.service.mapper;
 
-import com.baumeister.sndbx.exceptionhandling.domain.model.Booking;
+import com.devonfw.java.integration.exceptionhandling.domain.model.Booking;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

@@ -1,4 +1,4 @@
-package com.baumeister.sndbx.exceptionhandling.domain.model;
+package com.devonfw.java.integration.exceptionhandling.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

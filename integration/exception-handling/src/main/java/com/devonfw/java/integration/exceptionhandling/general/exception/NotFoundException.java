@@ -1,4 +1,4 @@
-package com.baumeister.sndbx.exceptionhandling.general.exception;
+package com.devonfw.java.integration.exceptionhandling.general.exception;
 
 public class NotFoundException extends RuntimeException {
 

@@ -1,14 +1,12 @@
-package com.baumeister.sndbx.exceptionhandling.service;
+package com.devonfw.java.integration.exceptionhandling.service;
 
-import com.baumeister.sndbx.exceptionhandling.domain.BookingManagement;
-import com.baumeister.sndbx.exceptionhandling.service.mapper.BookingToMapper;
+import com.devonfw.java.integration.exceptionhandling.domain.BookingManagement;
+import com.devonfw.java.integration.exceptionhandling.service.mapper.BookingToMapper;
 import com.devonfw.devon4j.generated.api.model.BookingTo;
 import com.devonfw.devon4j.generated.api.service.BookingApi;
 import java.util.List;
 import java.util.Optional;
-import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 

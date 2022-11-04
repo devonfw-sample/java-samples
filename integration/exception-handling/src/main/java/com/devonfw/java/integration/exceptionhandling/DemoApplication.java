@@ -1,4 +1,4 @@
-package com.baumeister.sndbx.exceptionhandling;
+package com.devonfw.java.integration.exceptionhandling;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
