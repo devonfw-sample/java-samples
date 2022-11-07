@@ -32,23 +32,6 @@ paths:
             schema:
               $ref: '#/components/schemas/Booking'
 
-    get:
-      tags:
-        - "Booking"
-      summary: Get all Bookings
-      description: Returns a list of bookings
-      operationId: getBookingAll
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Booking'
-
-
   /booking/{bookingId}:
     get:
       tags:

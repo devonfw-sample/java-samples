@@ -4,6 +4,9 @@ import com.devonfw.java.integration.exceptionhandling.domain.model.Booking;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * Mapstruct mapper for To to Model of the booking entity mapping.
+ */
 @Mapper
 public interface BookingToMapper {
   BookingToMapper INSTANCE = Mappers.getMapper(BookingToMapper.class);

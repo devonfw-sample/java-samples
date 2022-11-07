@@ -1,6 +1,7 @@
 package com.devonfw.java.integration.exceptionhandling.service;
 
 import com.devonfw.java.integration.exceptionhandling.domain.BookingManagement;
+import com.devonfw.java.integration.exceptionhandling.general.exception.OverBookedException;
 import com.devonfw.java.integration.exceptionhandling.service.mapper.BookingToMapper;
 import com.devonfw.devon4j.generated.api.model.BookingTo;
 import com.devonfw.devon4j.generated.api.service.BookingApi;
@@ -24,12 +25,8 @@ public class BookingService implements com.devonfw.devon4j.generated.api.service
 
   @Override
   public ResponseEntity<BookingTo> createBooking(BookingTo bookingTo) {
-    return ResponseEntity.accepted().body(bookingTo);
-  }
-
-  @Override
-  public ResponseEntity<List<BookingTo>> getBookingAll() {
-    return BookingApi.super.getBookingAll();
+    // Throwing this exception always, when the validation is ok
+    throw new OverBookedException("Sadly there's no free table at the moment");
   }
 
   @Override

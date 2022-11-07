@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents the booking of a table in our restaurant example.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
