@@ -3,6 +3,7 @@ package com.devonfw.java.integration.exceptionhandling.service.exception;
 import com.devonfw.devon4j.generated.api.model.ProblemDetailsTo;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -19,9 +20,9 @@ import java.util.function.Supplier;
  * </ul>
  * If necessary additional fields can be added.
  * <p>
- * For each of the fields this MapperClass contains a Lambda Consumer.
+ * For each of the fields this MapperClass contains a Lambda Function.
  * This consumer takes the incoming exception and a problemDetail.
- * It defines a function how to set the depending field in the problemDetail.
+ * It defines a function how to set the corresponding field in the problemDetail.
  * The implementation might use the fields from the exception.
  * <p>
  * For example the detailSetter might use the message from the exception and set it to the detail field
@@ -60,11 +61,24 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
    * example: `ValidationProblemDetailsTo::new`
    */
   private Supplier<TO> factory;
-  private BiConsumer<FROM, TO> typeSetter;
-  private BiConsumer<FROM, TO> titleSetter;
-  private BiConsumer<FROM, TO> instanceSetter;
-  private BiConsumer<FROM, TO> statusSetter;
-  private BiConsumer<FROM, TO> detailSetter;
+  private Function<FROM, String> type;
+  private Function<FROM, String> title;
+  private Function<FROM, String> instance;
+  private Function<FROM, Integer> status;
+  private Function<FROM, String> details;
+
+  /**
+   * Additional fields are one or more attributes on the specialized class inherited from
+   * ProblemDetailsTo Therefore, a BICOnsumer is necessary. It's expected that the BiConsumer sets
+   * the corresponding field in the ProblemDetailsTo directly
+   *
+   * <pre>
+   *   additionalFieldsSetter = (ex, problem) -> {
+   *     problem.setFailedValidations(ex.getFailedValidationList);
+   *     problem.setFurtherField(ex.furtherInformation);
+   *    }
+   * </pre>
+   */
   private BiConsumer<FROM, TO> additionalAttributeSetter;
 
   /**
@@ -76,13 +90,17 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
   public TO map(FROM ex) {
 
     TO problemDetails = this.factory.get();
-    this.typeSetter.accept(ex, problemDetails);
-    this.titleSetter.accept(ex, problemDetails);
-    this.detailSetter.accept(ex, problemDetails);
-    this.statusSetter.accept(ex, problemDetails);
-    this.instanceSetter.accept(ex, problemDetails);
+    problemDetails.setType(type.apply(ex));
+    problemDetails.setTitle(title.apply(ex));
+    problemDetails.setDetail(details.apply(ex));
+    problemDetails.setStatus(status.apply(ex));
+    problemDetails.setInstance(instance.apply(ex));
 
     if (this.additionalAttributeSetter != null) {
+      // Here the additionalFields are set on the problemDetails
+      // It can be argued that this is a code smell, because the lambda changes the
+      // parameter as call by reference. Sadly there's no generic way to handle this, because the
+      // attributes in problemDetails depend on the inherited class and are not known here.
       this.additionalAttributeSetter.accept(ex, problemDetails);
     }
     return problemDetails;
@@ -100,11 +118,11 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
     private String type = "urn:problem:internal-server-error";
     private String title = "An internal server error occurred";
     private Integer status = 500;
-    private BiConsumer<FROM, TO> typeSetter;
-    private BiConsumer<FROM, TO> titleSetter;
-    private BiConsumer<FROM, TO> instanceSetter;
-    private BiConsumer<FROM, TO> statusSetter;
-    private BiConsumer<FROM, TO> detailSetter;
+    private Function<FROM, String> typeDefinition;
+    private Function<FROM, String> titleDefinition;
+    private Function<FROM, String> instanceDefinition;
+    private Function<FROM, Integer> statusDefinition;
+    private Function<FROM, String> detailDefinition;
     private BiConsumer<FROM, TO> additionalAttributeSetter;
 
 
@@ -176,12 +194,12 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
      *
      * <pre>
      *   ...
-     *   .withTypeSetter((throwable, problemDetails) -> {problemDetails.setType("urn:problem:not-found")})
+     *   .withTypeDefinition((throwable, problemDetails) -> {problemDetails.setType("urn:problem:not-found")})
      *   .build()
      * </pre>
      */
-    public ExceptionMapperBuilder<FROM, TO> withTypeSetter(BiConsumer<FROM, TO> typeSetter) {
-      this.typeSetter = typeSetter;
+    public ExceptionMapperBuilder<FROM, TO> withTypeDefinition(Function<FROM, String> typeDefinition) {
+      this.typeDefinition = typeDefinition;
       return this;
     }
 
@@ -192,12 +210,12 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
      *
      * <pre>
      *   ...
-     *   .withTitleSetter((throwable, problemDetails) -> {problemDetails.setTitle("Resource not found")})
+     *   .withTitleDefinition((throwable, problemDetails) -> {problemDetails.setTitle("Resource not found")})
      *   .build()
      * </pre>
      */
-    public ExceptionMapperBuilder<FROM, TO> withTitleSetter(BiConsumer<FROM, TO> titleSetter) {
-      this.titleSetter = titleSetter;
+    public ExceptionMapperBuilder<FROM, TO> withTitleDefinition(Function<FROM, String> titleDefinition) {
+      this.titleDefinition = titleDefinition;
       return this;
     }
 
@@ -212,13 +230,13 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
      * <pre>
      *   ...
      *    // Use the correlation id as instance
-     *   .withInstanceSetter((throwable, problemDetails) -> {problemDetails.setInstance(MDC.get("correlationId"))})
+     *   .withInstanceDefinition((throwable, problemDetails) -> {problemDetails.setInstance(MDC.get("correlationId"))})
      *   .build()
      * </pre>
      */
-    public ExceptionMapperBuilder<FROM, TO> withInstanceSetter(
-        BiConsumer<FROM, TO> instanceSetter) {
-      this.instanceSetter = instanceSetter;
+    public ExceptionMapperBuilder<FROM, TO> withInstanceDefinition(
+        Function<FROM, String> instanceDefinition) {
+      this.instanceDefinition = instanceDefinition;
       return this;
     }
 
@@ -229,12 +247,12 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
      *
      * <pre>
      *   ...
-     *   .withStatusSetter((throwable, problemDetails) -> {problemDetails.setStatus(404)})
+     *   .withStatusDefinition((throwable, problemDetails) -> {problemDetails.setStatus(404)})
      *   .build()
      * </pre>
      */
-    public ExceptionMapperBuilder<FROM, TO> withStatusSetter(BiConsumer<FROM, TO> statusSetter) {
-      this.statusSetter = statusSetter;
+    public ExceptionMapperBuilder<FROM, TO> withStatusDefinition(Function<FROM, Integer> statusDefinition) {
+      this.statusDefinition = statusDefinition;
       return this;
     }
 
@@ -245,12 +263,12 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
      *
      * <pre>
      *   ...
-     *   .withDetailSetter((throwable, problemDetails) -> {problemDetails.setDetail(ex.getMessage())})
+     *   .withDetailDefinition((throwable, problemDetails) -> {problemDetails.setDetail(ex.getMessage())})
      *   .build()
      * </pre>
      */
-    public ExceptionMapperBuilder<FROM, TO> withDetailSetter(BiConsumer<FROM, TO> detailSetter) {
-      this.detailSetter = detailSetter;
+    public ExceptionMapperBuilder<FROM, TO> withDetailDefinition(Function<FROM, String> detailDefinition) {
+      this.detailDefinition = detailDefinition;
       return this;
     }
 
@@ -285,30 +303,28 @@ public class ExceptionMapper<FROM extends Throwable, TO extends ProblemDetailsTo
         // Otherwise, the correct ProblemDetailsTo could not be initialized by the mapper.
         throw new IllegalArgumentException("Missing a factory for the ProblemDetails");
       }
-      ExceptionMapper<FROM, TO> problemDetailsFactoryHelper = new ExceptionMapper<FROM, TO>();
+      ExceptionMapper<FROM, TO> problemDetailsFactoryHelper = new ExceptionMapper<>();
       problemDetailsFactoryHelper.factory = this.factory;
       problemDetailsFactoryHelper.throwableClass = this.throwableClass;
-      problemDetailsFactoryHelper.instanceSetter = this.instanceSetter;
-      if (this.instanceSetter == null) {
-        problemDetailsFactoryHelper.instanceSetter = (ex, problem) -> problem.setInstance(
-            "urn:uuid:" + UUID.randomUUID());
+      problemDetailsFactoryHelper.instance = this.instanceDefinition;
+      if (this.instanceDefinition == null) {
+        problemDetailsFactoryHelper.instance = (ex) -> "urn:uuid:" + UUID.randomUUID();
       }
-      problemDetailsFactoryHelper.detailSetter = this.detailSetter;
-      if (this.detailSetter == null) {
-        problemDetailsFactoryHelper.detailSetter = (ex, problem) -> problem.setDetail(
-            ex.getMessage());
+      problemDetailsFactoryHelper.details = this.detailDefinition;
+      if (this.detailDefinition == null) {
+        problemDetailsFactoryHelper.details = Throwable::getMessage;
       }
-      problemDetailsFactoryHelper.statusSetter = this.statusSetter;
-      if (this.statusSetter == null) {
-        problemDetailsFactoryHelper.statusSetter = (ex, problem) -> problem.setStatus(this.status);
+      problemDetailsFactoryHelper.status = this.statusDefinition;
+      if (this.statusDefinition == null) {
+        problemDetailsFactoryHelper.status = (ex) -> this.status;
       }
-      problemDetailsFactoryHelper.titleSetter = this.titleSetter;
-      if (this.titleSetter == null) {
-        problemDetailsFactoryHelper.titleSetter = (ex, problem) -> problem.setTitle(this.title);
+      problemDetailsFactoryHelper.title = this.titleDefinition;
+      if (this.titleDefinition == null) {
+        problemDetailsFactoryHelper.title = (ex) -> this.title;
       }
-      problemDetailsFactoryHelper.typeSetter = this.typeSetter;
-      if (this.typeSetter == null) {
-        problemDetailsFactoryHelper.typeSetter = (ex, problem) -> problem.setType(this.type);
+      problemDetailsFactoryHelper.type = this.typeDefinition;
+      if (this.typeDefinition == null) {
+        problemDetailsFactoryHelper.type = (ex) -> this.type;
       }
       problemDetailsFactoryHelper.additionalAttributeSetter = this.additionalAttributeSetter;
       return problemDetailsFactoryHelper;

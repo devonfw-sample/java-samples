@@ -13,6 +13,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 @RestController
 public class BookingService implements com.devonfw.devon4j.generated.api.service.BookingApi {
+
+  public static final BookingToMapper TO_MAPPER = BookingToMapper.INSTANCE;
   private BookingManagement bookingManagement;
 
   public BookingService(BookingManagement bookingManagement) {
@@ -25,12 +27,11 @@ public class BookingService implements com.devonfw.devon4j.generated.api.service
 
   @Override
   public ResponseEntity<BookingTo> createBooking(BookingTo bookingTo) {
-    // Throwing this exception always, when the validation is ok
-    throw new OverBookedException("Sadly there's no free table at the moment");
+    return ResponseEntity.accepted().body(TO_MAPPER.map(bookingManagement.createBooking(bookingTo)));
   }
 
   @Override
   public ResponseEntity<BookingTo> getBookingById(Long bookingId) {
-    return ResponseEntity.accepted().body(BookingToMapper.INSTANCE.map(bookingManagement.getBooking(bookingId)));
+    return ResponseEntity.accepted().body(TO_MAPPER.map(bookingManagement.getBooking(bookingId)));
   }
 }

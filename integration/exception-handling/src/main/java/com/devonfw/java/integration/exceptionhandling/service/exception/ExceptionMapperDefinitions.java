@@ -22,7 +22,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
  * Add them to the list at the bottom. A static Map will be created from that list for easier access
  * of the right mapper for a given exception.
  */
-public abstract class ExceptionMappers {
+public abstract class ExceptionMapperDefinitions {
 
   /**
    * Complex mapping to get the reason for the failure as list of string. Sadly the
@@ -41,10 +41,9 @@ public abstract class ExceptionMappers {
         problem.setFailedValidation(fields);
       };
 
-  private static final ExceptionMapper<Throwable, ProblemDetailsTo> DEFAULT_EXCEPTION_MAPPER =
+  public static final ExceptionMapper<Throwable, ProblemDetailsTo> DEFAULT_EXCEPTION_MAPPER =
       ExceptionMapperBuilder.builder(Throwable.class, ProblemDetailsTo::new)
-          .withDetailSetter(((throwable, problemDetailsTo) -> problemDetailsTo.setDetail(
-              "An unexpected error has occurred! We apologize any inconvenience. Please try again later.")))
+          .withDetailDefinition((throwable) -> "An unexpected error has occurred! We apologize any inconvenience. Please try again later.")
           .build();
 
   private static final ExceptionMapper<MethodArgumentNotValidException, ValidationProblemDetailsTo> VALIDATION_EXCEPTION_MAPPER =
@@ -53,10 +52,7 @@ public abstract class ExceptionMappers {
           .withType("urn:problem:validation-error")
           .withTitle("A validation failed")
           .withStatus(HttpStatus.NOT_ACCEPTABLE.value())
-          .withDetailSetter((ex, problem) -> {
-            problem.setDetail(
-                "Validation failed for " + ex.getBindingResult().getErrorCount() + " fields");
-          })
+          .withDetailDefinition((ex) -> "Validation failed for " + ex.getBindingResult().getErrorCount() + " fields")
           .withAdditionalAttributeSetter(VALIDATION_PROBLEM_DETAILS_BI_CONSUMER) // more complex mapping functions can be extracted
           .build();
   private static final ExceptionMapper<BusinessException, ProblemDetailsTo> BUSINESS_DEFAULT_EXCEPTION_MAPPER =

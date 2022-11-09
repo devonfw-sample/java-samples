@@ -1,9 +1,9 @@
 package com.devonfw.java.integration.exceptionhandling.service.exception;
 
-import static com.devonfw.java.integration.exceptionhandling.service.exception.ExceptionMappers.EXCEPTION_ERRORS_MAP;
+import static com.devonfw.java.integration.exceptionhandling.service.exception.ExceptionMapperDefinitions.DEFAULT_EXCEPTION_MAPPER;
+import static com.devonfw.java.integration.exceptionhandling.service.exception.ExceptionMapperDefinitions.EXCEPTION_ERRORS_MAP;
 
 import com.devonfw.devon4j.generated.api.model.ProblemDetailsTo;
-import com.devonfw.java.integration.exceptionhandling.general.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +40,6 @@ public class CustomExceptionHandler {
     ExceptionMapper<? extends Throwable, ? extends ProblemDetailsTo> mapper = EXCEPTION_ERRORS_MAP.get(
         exceptionClazz);
 
-    if(! Throwable.class.isAssignableFrom(exceptionClazz)) {
-      // This should never happen.
-      // If this happens something is wrong in the implementation and should be checked.
-      log.warn("Class {} was thrown, but not element of Throwable", exceptionClazz);
-    }
-
     // Check if an ExceptionMapper exists that is applicable.
     // This should in the last instance always be Throwable
     while (Throwable.class.isAssignableFrom(exceptionClazz) && mapper == null) {
@@ -57,7 +51,8 @@ public class CustomExceptionHandler {
       // defining a default.
       // But this should also never happen, as every exception should be derivable from Throwable.
       // Anyway as we're in the exception mapping phase, we're implementing it paranoid.
-      mapper = EXCEPTION_ERRORS_MAP.get(Throwable.class);
+      log.warn("Could not find an accurate exception mapper for {}", ex.getClass());
+      mapper = DEFAULT_EXCEPTION_MAPPER;
     }
 
     return mapper;
