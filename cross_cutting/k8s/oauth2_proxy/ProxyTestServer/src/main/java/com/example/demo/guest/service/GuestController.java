@@ -12,5 +12,4 @@ public class GuestController {
     public String getAll(){
         return "ALL GUESTS";
     }
-
 }

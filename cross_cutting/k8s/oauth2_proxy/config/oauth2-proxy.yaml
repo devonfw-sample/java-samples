@@ -17,7 +17,7 @@ spec:
       containers:
       - args:
         - --provider=keycloak-oidc
-        - --oidc-issuer-url=http://keycloak.default.svc.cluster.local/TestRealm
+        - --oidc-issuer-url=http://keycloak.localtest.me/realms/TestRealm
         - --skip-oidc-discovery=true
         - --oidc-jwks-url=http://keycloak.default.svc.cluster.local/realms/TestRealm/protocol/openid-connect/certs
         - --redeem-url=http://keycloak.default.svc.cluster.local/realms/TestRealm/protocol/openid-connect/token
@@ -25,8 +25,6 @@ spec:
 
         - --redirect-url=http://localtest.me/oauth2/callback
         - --upstream=http://spring-server-service.default.svc.cluster.local:8090
-
-        - --insecure-oidc-skip-issuer-verification=true #For local testing without dns server
 
         - --email-domain=*
         - --scope=openid email

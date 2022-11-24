@@ -4,7 +4,7 @@
 #Please make sure that nothing is blocking port 80 beacause if the port is blocked
 #by something the ingress controller will not listen on localhost but on an external cluster ip
 #We need to listen on localhost beacuse the service localtest.me will resolve as 127.0.0.1 without any modification in host files
-portcount=$(ss -lntu | grep ':80' | wc -l)
+portcount=$(ss -lntu | grep ':80' -c)
 
 if [[ $* != *--ignore-block* ]] && [ "$portcount" -gt 1 ]
 then
