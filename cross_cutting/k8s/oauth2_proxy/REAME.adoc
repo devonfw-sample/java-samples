@@ -1,0 +1,18 @@
+= Keycloak + Proxy
+
+In this example a spring service is secured by an oauth2 Proxy with keycloak as identity provider.
+
+image::docs/img/flow.drawio.svg[]
+
+== Required
+- Rancher Desktop 
+
+== Install
+- Run `./install.sh` set the flag `--ignore-block` to ignore blocked ports when installing
+- Create a keycloak user with the group `groups`
+- Test by trying to access link:http://localtest.me/api/guest/ 
+
+== Uninstall
+- Run `./uninstall.sh`
+
+Set flag `--remove-db` to remove the everthing including percistent volume claims

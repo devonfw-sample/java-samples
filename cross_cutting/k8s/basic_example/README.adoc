@@ -1,5 +1,6 @@
 == Run Example
 
+UPDATE
 
 In this example, a server (Original Server) inside the cluster connects to a database inside the cluster. To access data of the original server, another server(Access Server) inside the cluster is used. The aceess server can be accessed from outside the cluster. The access server  will communicate to the original server to retrieve data and sends it to the user.
 

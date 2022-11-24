@@ -1,0 +1,17 @@
+docker run quay.io/oauth2-proxy/oauth2-proxy `
+    --provider=keycloak-oidc `
+    --client-id=oauth-proxy `
+    --client-secret=xZIEtt4vZrLX85AkMuTsgXKQJDVg15qc `
+    --redirect-url=http://host.docker.internal:8090/callback `
+    --oidc-issuer-url=http://host.docker.internal:8080/realms/master `
+    --allowed-role=oauth-proxy:admin `
+    --cookie-secret=XWxWblIrMF8lPVMjM1JKUlhLKWtddV1OYU95YmIrQzU= `
+    --email-domain=*
+
+
+docker run --rm `
+    -v $PWD/config/oauth_proxy/oauth2_proxy.cfg:/etc/oauth2_proxy.cfg `
+    quay.io/oauth2-proxy/oauth2-proxy `
+    --config=/etc/oauth2_proxy.cfg
+
+    --allowed-role=<realm role name> // Optional, required realm role
