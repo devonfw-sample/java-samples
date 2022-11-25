@@ -1,3 +1,7 @@
+#This file configures the oauth proxy 
+#A list of arguments can be found here https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,22 +32,17 @@ spec:
 
         - --email-domain=*
         - --scope=openid email
-        #- --pass-authorization-header=true
-        #- --pass-access-token=true
-        #- --pass-user-headers=true
-        #- --set-authorization-header=true
-        #- --set-xauthrequest=true
-        #- --cookie-refresh=1m
-        #- --cookie-expire=30m
+        - --pass-authorization-header=true #optional
+        - --pass-access-token=true #optional
+
         - --http-address=0.0.0.0:4180
+        - --cookie-refresh=1m
+        - --cookie-expire=30m
         - --cookie-secure=false
-        #- --ssl-insecure-skip-verify=true
-        #- --ssl-upstream-insecure-skip-verify=true
-        #- --skip-auth-route=.*
-        #- --api-route=.*
+ 
+        - --skip-auth-route=/api/serviceB/*
         - --allowed-group=/groups #Limit to allowed groups
-        - --insecure-oidc-allow-unverified-email #Nessesary for testing
-        - --show-debug-on-error=true #Nessesary for testing
+        - --show-debug-on-error=true #For testing
         env:
         - name: OAUTH2_PROXY_CLIENT_ID
           value: oauthproxy
@@ -60,7 +59,6 @@ spec:
 
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
