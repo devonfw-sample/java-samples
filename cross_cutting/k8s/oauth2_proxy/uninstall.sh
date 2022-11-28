@@ -1,6 +1,5 @@
 #!/bin/bash
-
-docker image rm spring-server -f 
+#docker image rm spring-server -f 
 
 helm uninstall keycloak
 

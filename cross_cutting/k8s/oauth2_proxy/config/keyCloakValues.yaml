@@ -1,7 +1,10 @@
+#Access to the keycloak ui
 auth:
   adminUser: admin
   adminPassword: admin
 
+
+#Import realm on startup
 extraEnvVars: 
   - name: PROXY_ADDRESS_FORWARDING
     value: "true"
@@ -21,6 +24,8 @@ extraVolumeMounts:
   mountPath: "/config"
   readOnly: true
 
+
+#Setup routing
 ingress:
   enabled: true
   ingressClassName: "nginx"
@@ -29,6 +34,8 @@ ingress:
   path: /
   servicePort: http
 
+
+#Setup database
 postgresql:
   enabled: true
   auth:

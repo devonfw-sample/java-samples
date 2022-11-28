@@ -10,7 +10,7 @@ image::docs/img/flow.drawio.svg[]
 == Install
 - Run `./install.sh` set the flag `--ignore-block` to ignore blocked ports when installing
 - Create a keycloak user with the group `groups`
-- Test by trying to access link:http://localtest.me/api/guest/ 
+- Test by trying to access link:http://localtest.me/api/serviceA/ 
 
 == Uninstall
 - Run `./uninstall.sh`
