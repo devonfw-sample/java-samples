@@ -20,3 +20,9 @@ if [[ $* == *--remove-db* ]]
 then
     kubectl delete pvc --all 
 fi
+
+#pkill -f "port-forward"
+
+kubectl get all
+
+echo "Setup got removed"

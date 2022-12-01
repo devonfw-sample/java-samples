@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - args:
-        # Set keycloak as identity provicder
+        # Set keycloak as identity provider
         - --provider=keycloak-oidc
         # Set the token issuer url to the localhost url that is accessible outside the cluster
         - --oidc-issuer-url=http://keycloak.localtest.me/realms/TestRealm
@@ -31,7 +31,7 @@ spec:
         - --oidc-jwks-url=http://keycloak.default.svc.cluster.local/realms/TestRealm/protocol/openid-connect/certs
         # set to the kubernetes internal url to prevent the localhost url to resolve to the pods loopback 
         - --redeem-url=http://keycloak.default.svc.cluster.local/realms/TestRealm/protocol/openid-connect/token
-        # set the login url to the external localhost adress beacues the url is used to redirect the users browsert to the keycloak login screen that has to be accessable from outside the cluster
+        # set the login url to the external localhost address because the url is used to redirect the users browsers to the keycloak login screen that has to be accessible from outside the cluster
         - --login-url=http://keycloak.localtest.me/realms/TestRealm/protocol/openid-connect/auth
 
         - --redirect-url=http://localtest.me/oauth2/callback
@@ -49,6 +49,7 @@ spec:
         - --http-address=0.0.0.0:4180
         - --cookie-refresh=1m
         - --cookie-expire=30m
+        # Can only be true when using HTTPS
         - --cookie-secure=false
 
         #Routes in the upstream with no protection

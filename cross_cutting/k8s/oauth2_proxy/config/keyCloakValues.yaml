@@ -25,11 +25,13 @@ extraVolumeMounts:
   readOnly: true
 
 
+service:
+  type: ClusterIP
+
 #Setup routing
 ingress:
   enabled: true
-  ingressClassName: "nginx"
-  pathType: ImplementationSpecific
+  ingressClassName: nginx
   hostname: keycloak.localtest.me
   path: /
   servicePort: http

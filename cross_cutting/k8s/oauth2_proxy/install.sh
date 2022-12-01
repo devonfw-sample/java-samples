@@ -14,20 +14,20 @@ fi
 
 
 #This is to prevent the scrip from running when port 80 is blocked
-#Please make sure that nothing is blocking port 80 beacause if the port is blocked
+#Please make sure that nothing is blocking port 80 because if the port is blocked
 #by something the ingress controller will not listen on localhost but on an external cluster ip
-#We need to listen on localhost beacuse the service localtest.me will resolve to 127.0.0.1 without any modification in host files
+#We need to listen on localhost because the service localtest.me will resolve to 127.0.0.1 without any modification in host files
 portcount=$(ss -lntu | grep ':80' -c)
 
 if [[ $* != *--ignore-block* ]] && [ "$portcount" -gt 1 ]
 then
-    echo "Port 80 is currently blocked by another programm."
+    echo "Port 80 is currently blocked by another program."
     echo "The setup will not work if the ingress controller is not listening on localhost:80."
     echo "To skip this test run with --ignore-block"
     exit
 fi
 
-#List all docker images and check if the spring server imgae already got created
+#List all docker images and check if the spring server image already got created
 if [[ $* == *--containerd* ]]
 then
     dockerimageresult=$(nerdctl images --namespace k8s.io | grep "spring-server")
@@ -51,7 +51,7 @@ then
 fi
 
 
-#Add the required helm repos for a esay keycloak and ingress controller deployment
+#Add the required helm repos for an easy keycloak and ingress controller deployment
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
@@ -61,13 +61,13 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace
 
 
-#Wait for ingress controller to be fully running befor creating an ingress for it
+#Wait for ingress controller to be fully running before creating an ingress for it
 #This is needed to prevent an error causing the ingress deployment to fail
 kubectl wait deployment -n ingress-nginx ingress-nginx-controller --for condition=Available=True --timeout=-1s
 
 #Add an ingress to route all requests to the proxy
 #The ingress is using the created nginx controller installed in the prior step
-#To test the application localy we use the service localtest.me
+#To test the application locally we use the service localtest.me
 #This services is a fully qualified domain name that gets resolved to 127.0.0.1 by public dns servers
 kubectl apply -f config/ingress.yaml
 
@@ -89,7 +89,7 @@ kubectl apply -f config/springServer.yaml
 
 
 #Add the keyclak proxy to route all requests to
-#The proxy will check the request for the nessesery permissions
+#The proxy will check the request for the necessary permissions
 #If the request is valid the proxy will redirect the request to the upstream(spring server)
 #If not the browser of the user will redirect him to the oauth screen to login
 kubectl apply -f config/oauth2-proxy.yaml
@@ -97,9 +97,11 @@ kubectl apply -f config/oauth2-proxy.yaml
 #Wait for the keycloak pod to be fully set up 
 kubectl rollout status --watch --timeout=600s statefulset/keycloak
 
+#kubectl port-forward deployment.apps/ingress-nginx-controller 9947:80 -n ingress-nginx 2>&1 >/dev/null &
+
 kubectl get all
 
-echo "Everthing set up and ready"
+echo "Everything set up and ready"
 echo "If this is a first time install login to the keycloak ui to create a new user"
 echo "Keycloak: http://keycloak.localtest.me"
 echo "Spring  : http://localtest.me"

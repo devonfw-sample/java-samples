@@ -6,6 +6,7 @@ image::docs/img/flow.drawio.svg[]
 
 == Required
 - Rancher Desktop 
+- Maven
 
 == Install
 - Run `./install.sh` set the flag `--ignore-block` to ignore blocked ports when installing
