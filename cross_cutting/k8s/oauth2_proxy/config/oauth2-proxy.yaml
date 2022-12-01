@@ -1,0 +1,90 @@
+#This file configures the oauth proxy 
+#A list of arguments can be found here https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: oauth2-proxy
+  name: oauth2-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: oauth2-proxy
+  template:
+    metadata:
+      labels:
+        k8s-app: oauth2-proxy
+    spec:
+      containers:
+      - args:
+        # Set keycloak as identity provider
+        - --provider=keycloak-oidc
+        # Set the token issuer url to the localhost url that is accessible outside the cluster
+        - --oidc-issuer-url=http://keycloak.localtest.me/realms/TestRealm
+        # Deactivate oidc discovery to prevent the oidc-issuer-url to be used when starting the pod
+        # Rather set the next 3 urls manually
+        - --skip-oidc-discovery=true
+        # set to the kubernetes internal url to prevent the localhost url to resolve to the pods loopback 
+        - --oidc-jwks-url=http://keycloak.default.svc.cluster.local/realms/TestRealm/protocol/openid-connect/certs
+        # set to the kubernetes internal url to prevent the localhost url to resolve to the pods loopback 
+        - --redeem-url=http://keycloak.default.svc.cluster.local/realms/TestRealm/protocol/openid-connect/token
+        # set the login url to the external localhost address because the url is used to redirect the users browsers to the keycloak login screen that has to be accessible from outside the cluster
+        - --login-url=http://keycloak.localtest.me/realms/TestRealm/protocol/openid-connect/auth
+
+        - --redirect-url=http://localtest.me/oauth2/callback
+
+        # this url is the service that is called after the proxy authorized the request
+        - --upstream=http://spring-server-service.default.svc.cluster.local:8090
+
+        - --email-domain=*
+        - --scope=openid email
+        # Optional setting to allow the service behind the proxy to use the JWT
+        - --pass-authorization-header=true
+        # Optional setting to allow the service behind the proxy to use the JWT
+        - --pass-access-token=true
+
+        - --http-address=0.0.0.0:4180
+        - --cookie-refresh=1m
+        - --cookie-expire=30m
+        # Can only be true when using HTTPS
+        - --cookie-secure=false
+
+        #Routes in the upstream with no protection
+        - --skip-auth-route=/api/serviceB/*
+
+        #Limit access to allowed groups
+        - --allowed-group=/groups 
+        - --show-debug-on-error=true #For testing
+        env:
+        - name: OAUTH2_PROXY_CLIENT_ID
+          value: oauthproxy
+        - name: OAUTH2_PROXY_CLIENT_SECRET
+          value: clientSecretCode
+        - name: OAUTH2_PROXY_COOKIE_SECRET
+          value: ODlxNVpUMWF1YmhuR0J1Vkl3cStxUT09
+        image: quay.io/oauth2-proxy/oauth2-proxy:latest
+        imagePullPolicy: Always
+        name: oauth2-proxy
+        ports:
+        - containerPort: 4180
+          protocol: TCP
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: oauth2-proxy
+  name: oauth2-proxy
+spec:
+  ports:
+  - name: http
+    port: 4180
+    protocol: TCP
+    targetPort: 4180
+  selector:
+    k8s-app: oauth2-proxy

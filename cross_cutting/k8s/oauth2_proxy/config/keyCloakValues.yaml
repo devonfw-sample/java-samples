@@ -1,0 +1,57 @@
+#Access to the keycloak ui
+auth:
+  adminUser: admin
+  adminPassword: admin
+
+
+#Import realm on startup
+extraEnvVars: 
+  - name: PROXY_ADDRESS_FORWARDING
+    value: "true"
+  - name: KEYCLOAK_EXTRA_ARGS
+    value: "-Dkeycloak.import=/config/realm.json"     
+
+extraVolumes: 
+- name: config
+  configMap:
+    name: keycloak-realm
+    items:
+    - key: "realm.json"
+      path: "realm.json"
+
+extraVolumeMounts: 
+- name: config
+  mountPath: "/config"
+  readOnly: true
+
+
+service:
+  type: ClusterIP
+
+#Setup routing
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  hostname: keycloak.localtest.me
+  path: /
+  servicePort: http
+
+
+#Setup database
+postgresql:
+  enabled: true
+  auth:
+    username: bn_keycloak
+    password: bn_keycloak_password
+    database: bitnami_keycloak
+    existingSecret: ""
+  architecture: standalone
+
+externalDatabase:
+  host: ""
+  port: 5432
+  user: bn_keycloak
+  database: bitnami_keycloak
+  password: bn_keycloak_password
+  existingSecret: ""
+  existingSecretPasswordKey: ""
